@@ -268,6 +268,39 @@ def apply(post_id):
     con.commit(); con.close()
     return redirect(url_for("post_detail",post_id=post_id))
 
+@app.route("/transactions")
+def transactions_list():
+    con=db()
+    rows=con.execute("""
+      SELECT t.*,p.title,ru.username requester_name,au.username agent_name
+      FROM transactions t
+      JOIN posts p ON p.id=t.post_id
+      JOIN users ru ON ru.id=t.requester_id
+      JOIN users au ON au.id=t.agent_id
+      WHERE t.requester_id=? OR t.agent_id=?
+      ORDER BY t.id DESC
+    """,(session['user_id'],session['user_id'])).fetchall()
+    con.close()
+    return render_template("index.html", view="transactions", transactions=rows, user=current_user())
+
+@app.route("/chat/<int:txid>")
+def chat(txid):
+    con=db()
+    tx=con.execute("""
+      SELECT t.*,p.title,ru.username requester_name,au.username agent_name
+      FROM transactions t
+      JOIN posts p ON p.id=t.post_id
+      JOIN users ru ON ru.id=t.requester_id
+      JOIN users au ON au.id=t.agent_id
+      WHERE t.id=?
+    """,(txid,)).fetchone()
+    msgs=con.execute("""
+      SELECT m.*,u.username FROM messages m JOIN users u ON u.id=m.user_id
+      WHERE m.transaction_id=? ORDER BY m.id
+    """,(txid,)).fetchall()
+    con.close()
+    return render_template("index.html", view="chat", tx=tx, messages=msgs, user=current_user())
+
 @app.route("/transaction/<int:txid>")
 def transaction(txid):
     role=request.args.get("role","requester")
@@ -333,7 +366,7 @@ def switch(uid):
 
 @app.get("/health")
 def health():
-    return jsonify({"ok": True, "app": "HOSHI", "version": "0.3.1"})
+    return jsonify({"ok": True, "app": "HOSHI", "version": "0.3.2"})
 
 @app.get("/api/posts")
 def api_posts():
