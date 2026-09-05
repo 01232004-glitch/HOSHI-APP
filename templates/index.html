@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>H☆SHI</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+        "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+      color: #513b44;
+      min-height: 100vh;
+
+      background:
+        radial-gradient(circle at 10% 5%, #ffffff 0, transparent 25%),
+        radial-gradient(circle at 90% 15%, #ffd9e6 0, transparent 30%),
+        linear-gradient(180deg, #fff8fb 0%, #ffeaf2 52%, #fff6f8 100%);
+    }
+
+    button,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app {
+      max-width: 520px;
+      margin: 0 auto;
+      min-height: 100vh;
+      padding-bottom: 90px;
+    }
+
+    /* HEADER */
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      padding: 14px 18px;
+
+      background: rgba(255, 248, 251, 0.88);
+      backdrop-filter: blur(18px);
+
+      border-bottom: 1px solid rgba(201, 135, 157, 0.18);
+    }
+
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-size: 25px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: #b66d86;
+    }
+
+    .logo-star {
+      display: inline-block;
+      color: #e5a7bb;
+      text-shadow:
+        0 2px 5px #ffffff,
+        0 5px 10px rgba(183, 101, 130, 0.25);
+    }
+
+    .verified {
+      font-size: 12px;
+      color: #a56c80;
+      margin-top: 3px;
+    }
+
+    .profile-mini {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+
+      display: grid;
+      place-items: center;
+
+      font-weight: 700;
+      color: #a5647b;
+
+      background:
+        linear-gradient(145deg, #fff, #ffdce8);
+
+      border: 1px solid #f1b9cb;
+
+      box-shadow:
+        0 5px 12px rgba(183, 101, 130, 0.16),
+        inset 0 1px 2px white;
+    }
+
+    /* HERO */
+
+    .hero {
+      margin: 18px;
+      padding: 25px 21px;
+      border-radius: 28px;
+      position: relative;
+      overflow: hidden;
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255,255,255,0.92),
+          rgba(255,221,233,0.80)
+        );
+
+      border: 1px solid rgba(255,255,255,0.9);
+
+      box-shadow:
+        0 15px 35px rgba(190, 109, 139, 0.15),
+        inset 0 1px 0 white;
+    }
+
+    .hero::before {
+      content: "☆";
+      position: absolute;
+      right: -5px;
+      top: -28px;
+
+      font-size: 150px;
+      color: rgba(225, 154, 179, 0.14);
+
+      transform: rotate(10deg);
+    }
+
+    .sparkle {
+      position: absolute;
+      color: #dda0b5;
+      opacity: 0.65;
+    }
+
+    .s1 {
+      right: 35px;
+      bottom: 24px;
+      font-size: 22px;
+    }
+
+    .s2 {
+      right: 70px;
+      top: 25px;
+      font-size: 15px;
+    }
+
+    .hero-small {
+      font-size: 12px;
+      color: #b3788d;
+      margin-bottom: 9px;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: 25px;
+      line-height: 1.5;
+      letter-spacing: 0.5px;
+    }
+
+    .hero p {
+      margin: 12px 0 0;
+      font-size: 13px;
+      line-height: 1.8;
+      color: #826571;
+      max-width: 350px;
+    }
+
+    /* ACTIONS */
+
+    .actions {
+      padding: 0 18px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 11px;
+    }
+
+    .main-btn {
+      border: 0;
+      padding: 14px 10px;
+      border-radius: 18px;
+
+      font-weight: 700;
+      color: #764d5d;
+
+      background:
+        linear-gradient(145deg, #ffffff, #ffdce8);
+
+      box-shadow:
+        0 7px 16px rgba(180, 103, 131, 0.15),
+        inset 0 1px 1px white;
+    }
+
+    .main-btn.primary {
+      color: white;
+
+      background:
+        linear-gradient(135deg, #d98ca7, #bd708b);
+
+      box-shadow:
+        0 8px 18px rgba(181, 99, 129, 0.25);
+    }
+
+    /* TABS */
+
+    .tabs {
+      display: flex;
+      gap: 25px;
+      padding: 25px 20px 10px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .tab {
+      color: #ad8b97;
+    }
+
+    .tab.active {
+      color: #a65f79;
+      position: relative;
+    }
+
+    .tab.active::after {
+      content: "";
+      position: absolute;
+      height: 3px;
+      border-radius: 10px;
+      left: 0;
+      right: 0;
+      bottom: -8px;
+
+      background: linear-gradient(90deg, #d892aa, #f1b7c9);
+    }
+
+    /* POSTS */
+
+    .feed {
+      padding: 8px 17px;
+    }
+
+    .post {
+      margin: 13px 0;
+      padding: 17px;
+      border-radius: 23px;
+
+      background: rgba(255,255,255,0.78);
+
+      border: 1px solid rgba(255,255,255,0.9);
+
+      box-shadow:
+        0 10px 26px rgba(170, 102, 127, 0.10);
+    }
+
+    .post-head {
+      display: flex;
+      gap: 11px;
+      align-items: center;
+    }
+
+    .avatar {
+      width: 43px;
+      height: 43px;
+      border-radius: 50%;
+
+      display: grid;
+      place-items: center;
+
+      font-weight: 800;
+      color: #a45f78;
+
+      background:
+        linear-gradient(145deg, #fff, #ffdce8);
+
+      border: 1px solid #f1c0d0;
+    }
+
+    .username {
+      font-weight: 750;
+      font-size: 14px;
+    }
+
+    .meta {
+      font-size: 11px;
+      color: #aa8b96;
+      margin-top: 3px;
+    }
+
+    .badge {
+      margin-left: auto;
+      padding: 6px 10px;
+      border-radius: 20px;
+
+      font-size: 11px;
+      font-weight: 700;
+
+      color: #a15873;
+      background: #fff0f5;
+    }
+
+    .badge.agent {
+      color: #8f6875;
+      background: #f8edf1;
+    }
+
+    .post h2 {
+      font-size: 16px;
+      margin: 14px 0 8px;
+    }
+
+    .post-text {
+      font-size: 13px;
+      line-height: 1.7;
+      color: #745d66;
+    }
+
+    .price-box {
+      margin-top: 13px;
+      padding: 12px 13px;
+      border-radius: 15px;
+
+      display: flex;
+      justify-content: space-between;
+
+      background:
+        linear-gradient(135deg, #fff7fa, #ffe8f0);
+
+      font-size: 13px;
+    }
+
+    .price {
+      font-weight: 800;
+      color: #aa607a;
+    }
+
+    .post-actions {
+      display: flex;
+      gap: 18px;
+      margin-top: 14px;
+
+      color: #a68390;
+      font-size: 12px;
+    }
+
+    /* NAV */
+
+    nav {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+
+      width: 100%;
+      max-width: 520px;
+
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+
+      padding: 10px 5px 12px;
+
+      background: rgba(255, 249, 251, 0.94);
+      backdrop-filter: blur(20px);
+
+      border-top: 1px solid rgba(192, 126, 151, 0.15);
+    }
+
+    .nav-item {
+      border: 0;
+      background: none;
+      color: #a98995;
+
+      font-size: 10px;
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .nav-icon {
+      font-size: 19px;
+    }
+
+    .nav-item.active {
+      color: #b56180;
+      font-weight: 700;
+    }
+
+    .post-circle {
+      width: 43px;
+      height: 43px;
+      border-radius: 50%;
+
+      display: grid;
+      place-items: center;
+
+      margin-top: -17px;
+
+      color: white;
+      font-size: 24px;
+
+      background:
+        linear-gradient(145deg, #e4a1b8, #bb6e89);
+
+      box-shadow:
+        0 7px 17px rgba(181, 99, 129, 0.30);
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <header>
+    <div class="header-row">
+
+      <div>
+        <div class="logo">
+          H<span class="logo-star">☆</span>SHI
+        </div>
+
+        <div class="verified">
+          本人確認済み ✓
+        </div>
+      </div>
+
+      <div class="profile-mini">
+        Y
+      </div>
+
+    </div>
+  </header>
+
+
+  <section class="hero">
+
+    <span class="sparkle s1">✦</span>
+    <span class="sparkle s2">✧</span>
+
+    <div class="hero-small">
+      H☆SHI
+    </div>
+
+    <h1>
+      欲しいを、<br>
+      あきらめない。
+    </h1>
+
+    <p>
+      買いに行けない「欲しい」を、
+      行ける誰かにつなぐ。<br>
+      ファッション・POPUP・限定商品などを
+      安心して依頼できる購入代行サービス。
+    </p>
+
+  </section>
+
+
+  <div class="actions">
+
+    <button class="main-btn primary"
+      onclick="alert('代行依頼の投稿画面へ')">
+      ＋ 代行を依頼する
+    </button>
+
+    <button class="main-btn"
+      onclick="alert('検索画面へ')">
+      ⌕ 検索する
+    </button>
+
+  </div>
+
+
+  <div class="tabs">
+    <div class="tab active">おすすめ</div>
+    <div class="tab">フォロー中</div>
+  </div>
+
+
+  <main class="feed">
+
+    <article class="post">
+
+      <div class="post-head">
+
+        <div class="avatar">M</div>
+
+        <div>
+          <div class="username">
+            @miki___ ✓
+          </div>
+
+          <div class="meta">
+            ★ 4.98 ・ 東京都
+          </div>
+        </div>
+
+        <div class="badge">
+          代行依頼
+        </div>
+
+      </div>
+
+      <h2>
+        POPUP限定バッグを買ってほしいです 👜
+      </h2>
+
+      <div class="post-text">
+        明日から開催されるPOPUPの商品です。
+        現地に行けないため、購入してくださる方を探しています。
+      </div>
+
+      <div class="price-box">
+        <span>代行費</span>
+        <span class="price">¥2,000</span>
+      </div>
+
+      <div class="post-actions">
+        <span>♡ 18</span>
+        <span>💬 4</span>
+        <span>☆ 保存</span>
+      </div>
+
+    </article>
+
+
+    <article class="post">
+
+      <div class="post-head">
+
+        <div class="avatar">R</div>
+
+        <div>
+          <div class="username">
+            @rina_tokyo ✓
+          </div>
+
+          <div class="meta">
+            ★ 4.95 ・ 渋谷
+          </div>
+        </div>
+
+        <div class="badge agent">
+          代行可能
+        </div>
+
+      </div>
+
+      <h2>
+        渋谷・原宿エリア代行できます ☆
+      </h2>
+
+      <div class="post-text">
+        POPUP、コスメ、ファッション系OKです。
+        今日18時ごろまで対応できます。
+      </div>
+
+      <div class="price-box">
+        <span>代行費</span>
+        <span class="price">¥1,500〜</span>
+      </div>
+
+      <div class="post-actions">
+        <span>♡ 27</span>
+        <span>💬 7</span>
+        <span>☆ 保存</span>
+      </div>
+
+    </article>
+
+  </main>
+
+</div>
+
+
+<nav>
+
+  <button class="nav-item active">
+    <span class="nav-icon">⌂</span>
+    ホーム
+  </button>
+
+  <button class="nav-item">
+    <span class="nav-icon">⌕</span>
+    検索
+  </button>
+
+  <button class="nav-item">
+    <span class="post-circle">＋</span>
+    投稿
+  </button>
+
+  <button class="nav-item">
+    <span class="nav-icon">♡</span>
+    取引
+  </button>
+
+  <button class="nav-item">
+    <span class="nav-icon">♙</span>
+    マイページ
+  </button>
+
+</nav>
+
+</body>
+</html>
